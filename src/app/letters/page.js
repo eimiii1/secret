@@ -1,5 +1,8 @@
 'use client'
+import { Button } from "@/components/ui/button";
+import { MoveRight } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 function Page() {
   return (
@@ -11,8 +14,9 @@ function Page() {
 }
 
 function Container() {
+  const router = useRouter()
   return (
-    <div className="flex justify-center items-center px-4 py-12">
+    <div className="flex justify-center items-center px-4 py-12 flex-col">
       <div className="relative bg-[#fffef5] w-full max-w-lg rounded-sm shadow-2xl px-10 py-12"
         style={{
           backgroundImage: `repeating-linear-gradient(transparent, transparent 31px, #d4c9b0 31px, #d4c9b0 32px)`,
@@ -30,6 +34,15 @@ function Container() {
           </p>
           <p className="text-sm text-gray-400 mt-8 text-right">With love, Philip 🤍</p>
         </div>
+      </div>
+      <div className="p-4 flex w-full relative">
+        <Button 
+        variant="destructive" 
+        className='absolute right-0 w-50'
+        onClick={() => router.push('/home')}
+        >
+          <MoveRight />
+        </Button>
       </div>
     </div>
   );
