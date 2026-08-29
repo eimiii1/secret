@@ -1,35 +1,53 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function GalleryPage() {
   const [photos, setPhotos] = useState([]);
   const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false)
   const inputRef = useRef(null);
 
-  const handleFiles = (files) => {
-    const newPhotos = Array.from(files).map((file) => ({
-      id: Date.now() + Math.random(),
-      url: URL.createObjectURL(file),
-      file,
-    }));
-    setPhotos((prev) => [...prev, ...newPhotos]);
-  };
+  // fetch default images
+  useEffect(() => {
+    const fetchImages = async () => {
+      const res = await fetch('/api/gallery')
+      const data = await res.json()
+      setPhotos(data.photos)
+    }
+    
+    fetchImages()
+  }, [])
+
+  const handleFiles = async (files) => {
+    setUploading(true)
+    for (const file of Array.from(files)) {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('uploaded_by', 2)
+      
+      const res = await fetch('/api/gallery', {
+        method: "POST",
+        body: formData
+      })
+      
+      const data = await res.json() 
+      if (data.url) {
+        setPhotos(prev => [{url: data.url, id: Date.now()}, ...prev])
+      }
+    }
+    setUploading(false)
+  }
 
   const handleDrop = (e) => {
-    e.preventDefault();
-    setDragging(false);
-    handleFiles(e.dataTransfer.files);
-  };
-
-  const handleDelete = (id) => {
-    setPhotos((prev) => prev.filter((p) => p.id !== id));
-  };
+    e.preventDefault()
+    setDragging(false)
+    handleFiles(e.dataTransfer.files)
+  }
 
   return (
     <div className="min-h-screen px-6 py-12" style={{ background: "#fdf4ff" }}>
       <div className="max-w-4xl mx-auto">
 
-        {/* header */}
         <div className="flex items-end justify-between mb-12">
           <div className="flex items-end gap-4">
             <h1 className="text-6xl font-black text-black leading-none" style={{ fontFamily: "serif" }}>
@@ -42,7 +60,6 @@ export default function GalleryPage() {
           </a>
         </div>
 
-        {/* upload zone */}
         <div
           className="w-full border-2 border-dashed border-black mb-10 flex flex-col items-center justify-center gap-3 cursor-pointer transition-colors"
           style={{
@@ -69,10 +86,9 @@ export default function GalleryPage() {
           />
         </div>
 
-        {/* grid */}
         {photos.length === 0 ? (
           <p className="text-center text-xs font-bold uppercase tracking-widest text-gray-300 mt-20">
-            no photos yet 🌸
+            no photos yet 
           </p>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
