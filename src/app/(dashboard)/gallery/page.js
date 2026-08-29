@@ -1,0 +1,107 @@
+"use client";
+import { useState, useRef } from "react";
+
+export default function GalleryPage() {
+  const [photos, setPhotos] = useState([]);
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef(null);
+
+  const handleFiles = (files) => {
+    const newPhotos = Array.from(files).map((file) => ({
+      id: Date.now() + Math.random(),
+      url: URL.createObjectURL(file),
+      file,
+    }));
+    setPhotos((prev) => [...prev, ...newPhotos]);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragging(false);
+    handleFiles(e.dataTransfer.files);
+  };
+
+  const handleDelete = (id) => {
+    setPhotos((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  return (
+    <div className="min-h-screen px-6 py-12" style={{ background: "#fdf4ff" }}>
+      <div className="max-w-4xl mx-auto">
+
+        {/* header */}
+        <div className="flex items-end justify-between mb-12">
+          <div className="flex items-end gap-4">
+            <h1 className="text-6xl font-black text-black leading-none" style={{ fontFamily: "serif" }}>
+              GALLERY
+            </h1>
+            <span className="text-rose-400 text-4xl mb-1">✦</span>
+          </div>
+          <a href="/home" className="text-xs font-bold uppercase tracking-widest text-black border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-colors">
+            ← back
+          </a>
+        </div>
+
+        {/* upload zone */}
+        <div
+          className="w-full border-2 border-dashed border-black mb-10 flex flex-col items-center justify-center gap-3 cursor-pointer transition-colors"
+          style={{
+            minHeight: 160,
+            background: dragging ? "#ffe4e6" : "white",
+            boxShadow: "4px 4px 0px black",
+          }}
+          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={handleDrop}
+          onClick={() => inputRef.current.click()}
+        >
+          <span className="text-3xl">📷</span>
+          <p className="text-xs font-bold uppercase tracking-widest text-black">
+            {dragging ? "drop it!" : "drag & drop or click to upload"}
+          </p>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={(e) => handleFiles(e.target.files)}
+          />
+        </div>
+
+        {/* grid */}
+        {photos.length === 0 ? (
+          <p className="text-center text-xs font-bold uppercase tracking-widest text-gray-300 mt-20">
+            no photos yet 🌸
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            {photos.map((photo, i) => (
+              <div
+                key={photo.id}
+                className="relative group"
+                style={{
+                  background: "white",
+                  border: "2px solid black",
+                  padding: "8px 8px 32px 8px",
+                  boxShadow: "4px 4px 0px black",
+                  transform: i % 2 === 0 ? "rotate(-1.5deg)" : "rotate(1.5deg)",
+                }}
+              >
+                <div className="w-full aspect-square overflow-hidden">
+                  <img src={photo.url} alt="photo" className="w-full h-full object-cover" />
+                </div>
+                <button
+                  onClick={() => handleDelete(photo.id)}
+                  className="absolute top-2 right-2 bg-black text-white text-xs font-black px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
