@@ -163,26 +163,45 @@ function Hero() {
 }
 
 function Gallery() {
-  const placeholders = [1, 2, 3, 4, 5, 6];
-  const rotations = [-2, 1.5, -1, 2.5, -1.5, 1];
+  const [photos, setPhotos] = useState([])
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const res = await fetch('/api/gallery')
+      const data = await res.json() 
+      setPhotos(data.photos)
+    }
+    
+    fetchImages()
+  }, [])
+  
+  const rotations = [-2, 1.5, -1];
   return (
-    <section
-      id="gallery"
-      className="min-h-screen px-6 py-24"
-      style={{ background: "#fdf4ff" }}
-    >
+    <section id="gallery" className="min-h-screen px-6 py-24" style={{ background: "#fdf4ff" }}>
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-end gap-4 mb-12">
-          <h2
-            className="text-6xl font-black text-black leading-none"
-            style={{ fontFamily: "serif" }}
+        <div className="flex items-end justify-between mb-12">
+          <div className="flex items-end gap-4">
+            <h2 className="text-6xl font-black text-black leading-none" style={{ fontFamily: "serif" }}>
+              GALLERY
+            </h2>
+            <span className="text-rose-400 text-4xl mb-1">✦</span>
+          </div>
+          <a
+            href="/gallery"
+            className="text-xs font-bold uppercase tracking-widest border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-colors"
           >
-            GALLERY
-          </h2>
-          <span className="text-rose-400 text-4xl mb-1">✦</span>
+            see all →
+          </a>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
-          {placeholders.map((i) => (
+
+        {1 === 0 ? (
+          <p className="text-center text-xs font-bold uppercase tracking-widest text-gray-300 mt-20">
+            no photos yet
+          </p>
+        ) : (
+          
+        <div className="grid grid-cols-3 gap-8">
+          {photos.map((photo, i) => (
             <div
               key={i}
               className="flex flex-col items-center"
@@ -196,20 +215,14 @@ function Gallery() {
                   boxShadow: "4px 4px 0px black",
                 }}
               >
-                <div
-                  className="w-full aspect-square bg-rose-50 flex relative items-center justify-center"
-                  style={{ minWidth: 140, minHeight: 140 }}
-                >
-                  <img
-                    src='/meandmybaby.jpg'
-                    alt="photo"
-                    className="w-full h-full object-cover"
-                  />
+                <div className="aspect-square relative overflow-hidden" style={{ minWidth: 140, minHeight: 140 }}>
+                  <img src={photo.url} alt="photo" className="w-full h-full object-cover" />
                 </div>
               </div>
             </div>
           ))}
         </div>
+        )}
       </div>
     </section>
   );
