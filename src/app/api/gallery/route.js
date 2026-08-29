@@ -20,7 +20,7 @@ export async function POST(request) {
     .upload(filename, buffer, { contentType: file.type });
 
   if (uploadError) {
-    console.log('upload error:', uploadError)
+    console.log("upload error:", uploadError);
     return NextResponse.json({ message: uploadError.message }, { status: 500 });
   }
 
@@ -32,10 +32,10 @@ export async function POST(request) {
   // save to database
   const { error: dbError } = await supabase
     .from("gallery")
-    .insert({ url: urlData.publicUrl});
+    .insert({ url: urlData.publicUrl });
 
   if (dbError) {
-    console.log('db error:', dbError)
+    console.log("db error:", dbError);
     return NextResponse.json({ message: dbError.message }, { status: 500 });
   }
 

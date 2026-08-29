@@ -201,7 +201,7 @@ function Gallery() {
         ) : (
           
         <div className="grid grid-cols-3 gap-8">
-          {photos.map((photo, i) => (
+          {photos.slice(0, 6).map((photo, i) => (
             <div
               key={i}
               className="flex flex-col items-center"
@@ -265,7 +265,6 @@ function Notes() {
                 transform: i % 2 === 0 ? "rotate(-1deg)" : "rotate(1deg)",
               }}
             >
-              {/* pin */}
               <div
                 className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full border-2 border-black"
                 style={{ background: noteBorders[i] }}
@@ -289,22 +288,10 @@ const letterBgs = ["#fff0f5", "#fdf4ff", "#fff0f3"];
 function Letters() {
   const letters = [
     {
-      greeting: "Dear Jessa,",
+      greeting: "",
       body: "I know this is beri beri beri random but I'd just like you to know that I love you so much.",
-      closing: "With love, Philip 🤍",
-      seal: "🌸",
-    },
-    {
-      greeting: "My love,",
-      body: "I may not always say it out loud, but I hope this is enough to show you how much you mean to me.",
-      closing: "Always yours, Philip 🤍",
-      seal: "💜",
-    },
-    {
-      greeting: "To Jessa,",
-      body: "I don't really know how to put everything into words, but I'm still trying — and I'll keep trying, for you.",
-      closing: "Love always, Philip 🤍",
-      seal: "🌹",
+      closing: 'nigga',
+      seal: ""
     },
   ];
   return (

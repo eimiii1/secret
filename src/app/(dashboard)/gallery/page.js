@@ -44,6 +44,13 @@ export default function GalleryPage() {
     handleFiles(e.dataTransfer.files)
   }
 
+  const handleDelete = async (id) => {
+    await fetch('/api/gallery/' + id, {
+      method: "DELETE",
+    });
+    setPhotos(prev => prev.filter(p => p.id !== id))
+  }
+  
   return (
     <div className="min-h-screen px-6 py-12" style={{ background: "#fdf4ff" }}>
       <div className="max-w-4xl mx-auto">
