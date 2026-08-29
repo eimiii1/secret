@@ -39,7 +39,7 @@ function Container() {
         <Button 
         variant="destructive" 
         className='absolute right-0 w-50'
-        onClick={() => router.push('/home')}
+        onClick={() => router.push('/login')}
         >
           <MoveRight />
         </Button>
