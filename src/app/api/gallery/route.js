@@ -5,7 +5,6 @@ export async function POST(request) {
   // get request data
   const formData = await request.formData();
   const file = formData.get("file");
-  const uploadedBy = formData.get("uploaded_by");
 
   if (!file)
     return NextResponse.json({ message: "No file provided" }, { status: 400 });
@@ -33,7 +32,7 @@ export async function POST(request) {
   // save to database
   const { error: dbError } = await supabase
     .from("gallery")
-    .insert({ url: urlData.publicUrl, uploaded_by: uploadedBy });
+    .insert({ url: urlData.publicUrl});
 
   if (dbError) {
     console.log('db error:', dbError)
