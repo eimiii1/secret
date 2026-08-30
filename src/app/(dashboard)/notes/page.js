@@ -45,7 +45,6 @@ export default function NotesPage() {
         body: JSON.stringify({ title, body }),
       });
 
-      const data = await res.json()
       if (res.ok) {
         const refreshed = await fetch('/api/notes')
         const refreshedData = await refreshed.json()
@@ -59,6 +58,21 @@ export default function NotesPage() {
       setError(error.message);
     }
   };
+
+  const handleDelete = async (id) => {
+    try {
+      const res = await fetch(`/api/notes/${id}`, {
+        method: 'DELETE',
+      })
+
+      if (res.ok) {
+        setNotes(prev => prev.filter(n => n.id !== id))
+      }
+    } catch (error) {
+      console.log(error.message)
+      setError(error.message)
+    }
+  }
 
   return (
     <div
@@ -107,7 +121,7 @@ export default function NotesPage() {
             />
             <input
               type="text"
-              placeholder="title..."
+              placeholder="from..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="bg-transparent border-b-2 border-black outline-none text-sm font-bold uppercase tracking-widest placeholder:text-gray-300 py-1"
@@ -153,7 +167,10 @@ export default function NotesPage() {
                   className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full border-2 border-black"
                   style={{ background: pinColors[i % pinColors.length] }}
                 />
-                <button className="absolute top-2 right-2 bg-black text-white text-xs font-black px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  className="absolute top-2 right-2 bg-black text-white text-xs font-black px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => handleDelete(note.id)}
+                >
                   ✕
                 </button>
                 <p className="text-xs font-black uppercase tracking-widest text-black">
