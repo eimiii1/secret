@@ -164,11 +164,18 @@ const noteColors = ["#fff0f5", "#f0f7ff", "#f5fff0"];
 const noteBorders = ["#fb7185", "#60a5fa", "#4ade80"];
 
 function Notes() {
-  const placeholders = [
-    { title: "Note 1", body: "soasde..." },
-    { title: "Note 2", body: "asd..." },
-    { title: "Note 3", body: "asd.." },
-  ];
+  const [notes, setNotes] = useState([])
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      const res = await fetch('/api/notes')
+      const data = await res.json()
+      setNotes(data.notes)
+    }
+
+    fetchNotes()
+  }, [])
+
   return (
     <section id="notes" className="px-4 md:px-6 py-16 md:py-24" style={{ background: "#fff8e1" }}>
       <div className="max-w-4xl mx-auto">
@@ -183,24 +190,28 @@ function Notes() {
             see all →
           </a>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {placeholders.map((note, i) => (
-            <div
-              key={i}
-              className="relative p-6 flex flex-col gap-3"
-              style={{
-                background: noteColors[i],
-                border: "2px solid black",
-                boxShadow: "4px 4px 0px black",
-                transform: i % 2 === 0 ? "rotate(-1deg)" : "rotate(1deg)",
-              }}
-            >
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full border-2 border-black" style={{ background: noteBorders[i] }} />
-              <p className="text-xs font-black uppercase tracking-widest text-black">{note.title}</p>
-              <p className="text-sm text-gray-600 leading-relaxed">{note.body}</p>
-            </div>
-          ))}
-        </div>
+        {notes.length === 0 ? (
+          <p>no notes yet</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {notes.slice(0, 3).map((note, i) => (
+              <div
+                key={i}
+                className="relative p-6 flex flex-col gap-3"
+                style={{
+                  background: noteColors[i],
+                  border: "2px solid black",
+                  boxShadow: "4px 4px 0px black",
+                  transform: i % 2 === 0 ? "rotate(-1deg)" : "rotate(1deg)",
+                }}
+              >
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full border-2 border-black" style={{ background: noteBorders[i] }} />
+                <p className="text-xs font-black uppercase tracking-widest text-black">{note.title}</p>
+                <p className="text-sm text-gray-600 leading-relaxed">{note.body}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
