@@ -1,22 +1,77 @@
 "use client";
 import { useState, useEffect } from "react";
 
-const noteColors = ["#fff0f5", "#f0f7ff", "#f5fff0", "#fff8e1", "#fdf4ff", "#fff0f3"];
-const pinColors = ["#fb7185", "#60a5fa", "#4ade80", "#fbbf24", "#c084fc", "#f472b6"];
+const noteColors = [
+  "#fff0f5",
+  "#f0f7ff",
+  "#f5fff0",
+  "#fff8e1",
+  "#fdf4ff",
+  "#fff0f3",
+];
+const pinColors = [
+  "#fb7185",
+  "#60a5fa",
+  "#4ade80",
+  "#fbbf24",
+  "#c084fc",
+  "#f472b6",
+];
 
 export default function NotesPage() {
   const [notes, setNotes] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      const res = await fetch("/api/notes");
+      const data = await res.json();
+      setNotes(data.notes);
+    };
+
+    fetchNotes();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    try {
+      const res = await fetch("/api/notes", {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title, body }),
+      });
+
+      const data = await res.json()
+      if (res.ok) {
+        const refreshed = await fetch('/api/notes')
+        const refreshedData = await refreshed.json()
+        setNotes(refreshedData.notes)
+        setTitle("")
+        setBody("")
+        setShowForm(false)
+      }
+    } catch (error) {
+      console.log(error.message)
+      setError(error.message);
+    }
+  };
 
   return (
-    <div className="min-h-screen px-4 md:px-6 py-8 md:py-12" style={{ background: "#fff8e1" }}>
+    <div
+      className="min-h-screen px-4 md:px-6 py-8 md:py-12"
+      style={{ background: "#fff8e1" }}
+    >
       <div className="max-w-4xl mx-auto">
-
         <div className="flex items-end justify-between mb-8 md:mb-12">
           <div className="flex items-end gap-3">
-            <h1 className="text-4xl md:text-6xl font-black text-black leading-none" style={{ fontFamily: "serif" }}>
+            <h1
+              className="text-4xl md:text-6xl font-black text-black leading-none"
+              style={{ fontFamily: "serif" }}
+            >
               NOTES
             </h1>
             <span className="text-yellow-400 text-2xl md:text-4xl mb-1">✦</span>
@@ -28,7 +83,10 @@ export default function NotesPage() {
             >
               {showForm ? "cancel" : "+ add note"}
             </button>
-            <a href="/home" className="text-xs font-bold uppercase tracking-widest border-2 border-black px-3 py-2 hover:bg-black hover:text-white transition-colors">
+            <a
+              href="/home"
+              className="text-xs font-bold uppercase tracking-widest border-2 border-black px-3 py-2 hover:bg-black hover:text-white transition-colors"
+            >
               ← back
             </a>
           </div>
@@ -43,7 +101,10 @@ export default function NotesPage() {
               boxShadow: "4px 4px 0px black",
             }}
           >
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full border-2 border-black" style={{ background: "#fb7185" }} />
+            <div
+              className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full border-2 border-black"
+              style={{ background: "#fb7185" }}
+            />
             <input
               type="text"
               placeholder="title..."
@@ -58,11 +119,13 @@ export default function NotesPage() {
               rows={4}
               className="bg-transparent outline-none text-sm text-gray-600 leading-relaxed resize-none placeholder:text-gray-300"
               style={{
-                backgroundImage: "repeating-linear-gradient(transparent, transparent 27px, rgba(0,0,0,0.06) 27px, rgba(0,0,0,0.06) 28px)",
+                backgroundImage:
+                  "repeating-linear-gradient(transparent, transparent 27px, rgba(0,0,0,0.06) 27px, rgba(0,0,0,0.06) 28px)",
               }}
             />
             <button
               className="self-end text-xs font-bold uppercase tracking-widest bg-black text-white px-4 py-2 hover:bg-rose-400 transition-colors"
+              onClick={handleSubmit}
             >
               save note
             </button>
@@ -90,15 +153,21 @@ export default function NotesPage() {
                   className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full border-2 border-black"
                   style={{ background: pinColors[i % pinColors.length] }}
                 />
-                <button
-                  className="absolute top-2 right-2 bg-black text-white text-xs font-black px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
+                <button className="absolute top-2 right-2 bg-black text-white text-xs font-black px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   ✕
                 </button>
-                <p className="text-xs font-black uppercase tracking-widest text-black">{note.title}</p>
-                <p className="text-sm text-gray-600 leading-relaxed">{note.body}</p>
+                <p className="text-xs font-black uppercase tracking-widest text-black">
+                  {note.title}
+                </p>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {note.body}
+                </p>
                 <p className="text-xs text-gray-400 mt-auto">
-                  {new Date(note.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  {new Date(note.created_at).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
                 </p>
               </div>
             ))}
