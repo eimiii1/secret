@@ -1,16 +1,18 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 import { useState } from "react";
 
 function Main() {
-  return (
-    <div className="relative min-h-screen flex justify-evenly items-center flex-col">
-      <Image src="/bg.jpg" alt="bg" fill className="object-cover -z-10" />
-      <Introduction />
-    </div>
-  );
+  // return (
+  //   <div className="relative min-h-screen flex justify-evenly items-center flex-col">
+  //     <Image src="/bg.jpg" alt="bg" fill className="object-cover -z-10" />
+  //     <Introduction />
+  //   </div>
+  // );
+
+  redirect('/home')
 }
 
 function Introduction() {
