@@ -1,51 +1,134 @@
-'use client'
-import { Button } from "@/components/ui/button";
-import { MoveRight } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+"use client";
+import { useState, useEffect } from "react";
 
-function Page() {
+const letterBgs = ["#fff0f5", "#fdf4ff", "#fff0f3", "#e8f5e9", "#fff8e1", "#f0f7ff"];
+
+export default function LettersPage() {
+  const [letters, setLetters] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [body, setBody] = useState("");
+  const [senderName, setSenderName] = useState("");
+  const [songUrl, setSongUrl] = useState("");
+
+  useEffect(() => {
+    const fetchLetters = async () => {
+      const res = await fetch("/api/letters");
+      const data = await res.json();
+      setLetters(data.letters);
+    };
+    fetchLetters();
+  }, []);
+
+  const handleSubmit = async () => {
+    const res = await fetch("/api/letters", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ body, sender_name: senderName, song_url: songUrl }),
+    });
+    if (res.ok) {
+      const refreshed = await fetch("/api/letters");
+      const refreshedData = await refreshed.json();
+      setLetters(refreshedData.letters);
+      setBody("");
+      setSenderName("");
+      setSongUrl("");
+      setShowForm(false);
+    }
+  };
+
   return (
-    <div className="relative min-h-screen flex justify-center items-center flex-col">
-      <Image src="/bg.jpg" alt="bg" fill className="object-cover -z-10" />
-      <Container />
-    </div>
-  );  
-}
+    <div className="min-h-screen px-4 md:px-6 py-8 md:py-12" style={{ background: "#e8f5e9" }}>
+      <div className="max-w-4xl mx-auto">
 
-function Container() {
-  const router = useRouter()
-  return (
-    <div className="flex justify-center items-center px-4 py-12 flex-col">
-      <div className="relative bg-[#fffef5] w-full max-w-lg rounded-sm shadow-2xl px-10 py-12"
-        style={{
-          backgroundImage: `repeating-linear-gradient(transparent, transparent 31px, #d4c9b0 31px, #d4c9b0 32px)`,
-          boxShadow: '4px 4px 0 #d4c9b0, 8px 8px 0 #e8e0cc'
-        }}
-      >
-        {/* red margin line */}
-        <div className="absolute top-0 bottom-0 left-16 w-px bg-red-300/60" />
-
-        <div className="relative pl-6">
-          <p className="text-sm text-gray-400 mb-6">Dear Mahal,</p>
-          <p className="text-gray-700 leading-8 text-sm">
-            {/* put your letter here */}
-            I know this is beri beri beri random but I'd just like you to know that I love you so much. I just know that each day, my heart is growing more and more fond for you. I may not always say it out loud, but I hope this is enough to show you how much you mean to me. You make everything feel better, and I'm really grateful that I get to call you mine. I don't really know how to put everything into words, but I'm still trying — and I'll keep trying, for you. I'm also really proud of you, more than you probably know. Ayun lang mahal, I love you hihi.
-          </p>
-          <p className="text-sm text-gray-400 mt-8 text-right">With love, Philip 🤍</p>
+        <div className="flex items-end justify-between mb-8 md:mb-12">
+          <div className="flex items-end gap-3">
+            <h1 className="text-4xl md:text-6xl font-black text-black leading-none" style={{ fontFamily: "serif" }}>
+              LETTERS
+            </h1>
+            <span className="text-green-400 text-2xl md:text-4xl mb-1">✦</span>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="text-xs font-bold uppercase tracking-widest border-2 border-black px-3 py-2 hover:bg-black hover:text-white transition-colors"
+            >
+              {showForm ? "cancel" : "+ write letter"}
+            </button>
+            <a href="/home" className="text-xs font-bold uppercase tracking-widest border-2 border-black px-3 py-2 hover:bg-black hover:text-white transition-colors">
+              ← back
+            </a>
+          </div>
         </div>
-      </div>
-      <div className="p-4 flex w-full relative">
-        <Button 
-        variant="destructive" 
-        className='absolute right-0 w-50'
-        onClick={() => router.push('/login')}
-        >
-          <MoveRight />
-        </Button>
+
+        {showForm && (
+          <div
+            className="relative mb-10 p-6 flex flex-col gap-4"
+            style={{
+              backgroundColor: "white",
+              border: "2px solid black",
+              boxShadow: "4px 4px 0px black",
+              backgroundImage: "repeating-linear-gradient(transparent, transparent 27px, rgba(0,0,0,0.06) 27px, rgba(0,0,0,0.06) 28px)",
+            }}
+          >
+            <input
+              type="text"
+              placeholder="your name..."
+              value={senderName}
+              onChange={(e) => setSenderName(e.target.value)}
+              className="bg-transparent border-b-2 border-black outline-none text-sm font-bold uppercase tracking-widest placeholder:text-gray-300 py-1"
+            />
+            <textarea
+              placeholder="write your letter..."
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              rows={6}
+              className="bg-transparent outline-none text-sm text-gray-600 leading-relaxed resize-none placeholder:text-gray-300"
+            />
+            <input
+              type="text"
+              placeholder="spotify track url..."
+              value={songUrl}
+              onChange={(e) => setSongUrl(e.target.value)}
+              className="bg-transparent border-b-2 border-black outline-none text-sm placeholder:text-gray-300 py-1"
+            />
+            <button
+              onClick={handleSubmit}
+              className="self-end text-xs font-bold uppercase tracking-widest bg-black text-white px-4 py-2 hover:bg-rose-400 transition-colors"
+            >
+              send letter
+            </button>
+          </div>
+        )}
+
+        {letters.length === 0 ? (
+          <p className="text-center text-xs font-bold uppercase tracking-widest text-gray-300 mt-20">
+            no letters yet
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {letters.map((letter, i) => (
+              <a
+                key={letter.id}
+                href={"/letters/" + letter.id}
+                className="relative p-8 flex flex-col gap-4 group"
+                style={{
+                  backgroundColor: letterBgs[i % letterBgs.length],
+                  border: "2px solid black",
+                  boxShadow: "4px 4px 0px black",
+                  backgroundImage: "repeating-linear-gradient(transparent, transparent 27px, rgba(0,0,0,0.06) 27px, rgba(0,0,0,0.06) 28px)",
+                  transform: i % 2 === 0 ? "rotate(-0.5deg)" : "rotate(0.5deg)",
+                  textDecoration: "none",
+                }}
+              >
+                <p className="text-sm text-gray-600 leading-7 flex-1 line-clamp-4">{letter.body}</p>
+                <div className="flex items-center justify-between mt-4 border-t border-black/10 pt-4">
+                  <p className="text-xs text-gray-400 font-bold">— {letter.sender_name}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-export default Page;
