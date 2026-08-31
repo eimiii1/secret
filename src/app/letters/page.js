@@ -40,25 +40,25 @@ export default function LettersPage() {
     <div className="min-h-screen px-4 md:px-6 py-8 md:py-12" style={{ background: "#e8f5e9" }}>
       <div className="max-w-4xl mx-auto">
 
-        <div className="flex items-end justify-between mb-8 md:mb-12">
-          <div className="flex items-end gap-3">
-            <h1 className="text-4xl md:text-6xl font-black text-black leading-none" style={{ fontFamily: "serif" }}>
-              LETTERS
-            </h1>
-            <span className="text-green-400 text-2xl md:text-4xl mb-1">✦</span>
-          </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="text-xs font-bold uppercase tracking-widest border-2 border-black px-3 py-2 hover:bg-black hover:text-white transition-colors"
-            >
-              {showForm ? "cancel" : "+ write letter"}
-            </button>
-            <a href="/home" className="text-xs font-bold uppercase tracking-widest border-2 border-black px-3 py-2 hover:bg-black hover:text-white transition-colors">
-              ← back
-            </a>
-          </div>
-        </div>
+        <div className="flex items-start md:items-end justify-between mb-8 md:mb-12 flex-col md:flex-row gap-4 md:gap-0">
+  <div className="flex items-end gap-3">
+    <h1 className="text-4xl md:text-6xl font-black text-black leading-none" style={{ fontFamily: "serif" }}>
+      LETTERS
+    </h1>
+    <span className="text-green-400 text-2xl md:text-4xl mb-1">✦</span>
+  </div>
+  <div className="flex gap-3">
+    <button
+      onClick={() => setShowForm(!showForm)}
+      className="text-xs font-bold uppercase tracking-widest border-2 border-black px-3 py-2 hover:bg-black hover:text-white transition-colors"
+    >
+      {showForm ? "cancel" : "+ write letter"}
+    </button>
+    <a href="/home" className="text-xs font-bold uppercase tracking-widest border-2 border-black px-3 py-2 hover:bg-black hover:text-white transition-colors">
+      ← back
+    </a>
+  </div>
+</div>
 
         {showForm && (
           <div
