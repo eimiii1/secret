@@ -220,14 +220,17 @@ function Notes() {
 const letterBgs = ["#fff0f5", "#fdf4ff", "#fff0f3"];
 
 function Letters() {
-  const letters = [
-    {
-      greeting: "",
-      body: "I know this is beri beri beri random but I'd just like you to know that I love you so much.",
-      closing: "nigga",
-      seal: "",
-    },
-  ];
+  const [letters, setLetters] = useState([]);
+
+  useEffect(() => {
+    const fetchLetters = async () => {
+      const res = await fetch("/api/letters");
+      const data = await res.json();
+      setLetters(data.letters);
+    };
+    fetchLetters();
+  }, []);
+
   return (
     <section id="letters" className="px-4 md:px-6 py-16 md:py-24" style={{ background: "#e8f5e9" }}>
       <div className="max-w-4xl mx-auto">
@@ -242,28 +245,31 @@ function Letters() {
             see all →
           </a>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {letters.map((letter, i) => (
-            <div
-              key={i}
-              className="relative p-8 flex flex-col gap-4"
-              style={{
-                background: letterBgs[i],
-                border: "2px solid black",
-                boxShadow: "4px 4px 0px black",
-                backgroundImage: "repeating-linear-gradient(transparent, transparent 27px, rgba(0,0,0,0.06) 27px, rgba(0,0,0,0.06) 28px)",
-                transform: i % 2 === 0 ? "rotate(-0.5deg)" : "rotate(0.5deg)",
-              }}
-            >
-              <p className="text-xs font-black uppercase tracking-widest text-gray-400">{letter.greeting}</p>
-              <p className="text-sm text-gray-600 leading-7 flex-1">{letter.body}</p>
-              <div className="flex items-center justify-between mt-4 border-t border-black/10 pt-4">
-                <span className="text-2xl">{letter.seal}</span>
-                <p className="text-xs text-gray-400 font-bold">{letter.closing}</p>
+
+        {letters.length === 0 ? (
+          <p className="text-center text-xs font-bold uppercase tracking-widest text-gray-300 mt-20">no letters yet</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {letters.slice(0, 3).map((letter, i) => (
+              <div
+                key={letter.id}
+                className="relative p-8 flex flex-col gap-4"
+                style={{
+                  background: letterBgs[i % letterBgs.length],
+                  border: "2px solid black",
+                  boxShadow: "4px 4px 0px black",
+                  backgroundImage: "repeating-linear-gradient(transparent, transparent 27px, rgba(0,0,0,0.06) 27px, rgba(0,0,0,0.06) 28px)",
+                  transform: i % 2 === 0 ? "rotate(-0.5deg)" : "rotate(0.5deg)",
+                }}
+              >
+                <p className="text-sm text-gray-600 leading-7 flex-1 line-clamp-4">{letter.body}</p>
+                <div className="flex items-center justify-between mt-4 border-t border-black/10 pt-4">
+                  <p className="text-xs text-gray-400 font-bold">— {letter.sender_name}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
